@@ -5,11 +5,15 @@ A Nemo Action that allows you to create .desktop files linking to a file, link, 
 
 ## Installation
 
-Clone the repository to your local machine:
+To contribute, clone the repository to your local machine:
     
     git clone https://github.com/geixco/create-shortcut-nemo-action.git
+    
+To download, get the files from http://geixcowo.ga/create-shortcut-nemo-action.tar.gz and extract them to your local machine.
 
-####As a Nemo Action
+    tar -xvf create-shortcut-nemo-action.tar.gz
+
+#### As a Nemo Action
 1. Find Nemo's preferences in the **Edit** menu.
 
 ![Find Nemo's preferences in the Edit menu](./instruction/step1.png)
@@ -26,10 +30,11 @@ You can now use the **Create Shortcut Here** action within Nemo.
 
 ![You can now use the Create Shortcut Here action within Nemo](./instruction/menu.png)
 
-####As a stand-alone application
-1. Open a terminal and navigate to the directory where you cloned the repository.
+#### As a stand-alone application
+1. Open a terminal and navigate to the directory where you downloaded the files.
 
         cd create-shortcut-nemo-action
+
 2. Move the create-shortcut binary to where you want to install it. In this case, I installed it in /usr/local/bin.
 
         sudo mv create-shortcut /usr/local/bin/
