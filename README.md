@@ -45,6 +45,3 @@ You can now use the **Create Shortcut Here** action within Nemo.
 You can now use the **Create Shortcut** action from the terminal.
 
 ![You can now use the Create Shortcut action from the terminal](./instruction/standalone.png)
-
-## Usage
-  - Add directions on how each field works
