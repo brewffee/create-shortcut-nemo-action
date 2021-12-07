@@ -1,7 +1,7 @@
 # create-shortcut-nemo-action
 A Nemo Action that allows you to create .desktop files linking to a file, link, or directory of your choosing. (This action is also available as a stand-alone application!)
 
-![Preview](./preview.png)
+![Preview](./instruction/preview.png)
 
 ## Installation
 
@@ -12,19 +12,19 @@ Clone the repository to your local machine:
 ####As a Nemo Action
 1. Find Nemo's preferences in the **Edit** menu.
 
-![Find Nemo's preferences in the Edit menu](./step1.png)
+![Find Nemo's preferences in the Edit menu](./instruction/step1.png)
 
 2. Click **Plugins** and then press the folder icon under the **Actions** heading.
 
-![Click Plugins and then press the folder icon under the Actions heading](./step2.png)
+![Click Plugins and then press the folder icon under the Actions heading](./instruction/step2.png)
 
 3. Move the **create-shortcut** and the **create-shortcut.nemo_action** files into the newly opened Actions folder.
 
-![Move the create-shortcut and create-shortcut.nemo_action files into the Actions folder](./step3.png)
+![Move the create-shortcut and create-shortcut.nemo_action files into the Actions folder](./instruction/step3.png)
 
 You can now use the **Create Shortcut Here** action within Nemo.
 
-![You can now use the Create Shortcut Here action within Nemo](./menu.png)
+![You can now use the Create Shortcut Here action within Nemo](./instruction/menu.png)
 
 ####As a stand-alone application
 1. Open a terminal and navigate to the directory where you cloned the repository.
@@ -39,7 +39,7 @@ You can now use the **Create Shortcut Here** action within Nemo.
 
 You can now use the **Create Shortcut** action from the terminal.
 
-![You can now use the Create Shortcut action from the terminal](./standalone.png)
+![You can now use the Create Shortcut action from the terminal](./instruction/standalone.png)
 
 ## Usage
   - Add directions on how each field works
