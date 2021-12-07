@@ -1,4 +1,11 @@
-# Usage: main.py '<target_file>'
+#! /usr/bin/python3 -OOt
+#
+# Usage: main.py '[target_file]'
+#
+# This script was originally designed to be run only when given a target file,
+# but has been adapted to be run without a target file.
+#
+# Bugs are to be expected.
 
 import mimetypes
 import os
@@ -22,11 +29,10 @@ class MainWindow(Gtk.Window):
         self.set_border_width(16)
         self.set_position(Gtk.WindowPosition.CENTER)
 
-        # Create a vertical box
+        # Create the content boxes
         vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=16)
         self.add(vbox)
 
-        # Create a horizontal box
         hbox = Gtk.Box(spacing=16)
         vbox.pack_start(hbox, True, True, 0)
 
@@ -40,18 +46,16 @@ class MainWindow(Gtk.Window):
         rbox.set_size_request(456, -1)
         hbox.pack_end(rbox, True, True, 0)
 
-        # Create a label aligned to the left
+        # Create a label for type
         typeLabel = Gtk.Label()
         typeLabel.set_markup("<b>Type:</b>")
         typeLabel.set_halign(Gtk.Align.END)
 
-        # Create a combo box
+        # Create a type combo box
         typeCombo = Gtk.ComboBoxText()
 
-        # Disable for now
+        # Disable until full support is added
         typeCombo.set_sensitive(False)
-
-        # Add tooltip to combo box
         typeCombo.set_tooltip_text("(Coming soon) Select the type of launcher you want to create")
 
         typeCombo.append_text("Application")
@@ -59,47 +63,63 @@ class MainWindow(Gtk.Window):
         typeCombo.append_text("Directory")
         typeCombo.set_active(0)
         typeCombo.set_hexpand(True)
+    
         self.typeCombo = typeCombo
 
         cbox.pack_start(typeLabel, True, True, 0)
         rbox.pack_start(typeCombo, False, True, 0)
 
         # Get the executable name and working directory
-        executable = os.path.basename(argv[1]).split(".")[0]
-        directory = os.path.dirname(argv[1])
+        if len(argv) > 1:
+            executable = os.path.basename(argv[1]).split(".")[0]        
+            directory = os.path.dirname(argv[1])
+        else:
+            # Open a file chooser and ask for a folder to create the launcher in
+            fileChooser = Gtk.FileChooserDialog("Please choose a folder", self, Gtk.FileChooserAction.SELECT_FOLDER, (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, Gtk.STOCK_OPEN, Gtk.ResponseType.OK))
+            response = fileChooser.run()
+            if response == Gtk.ResponseType.OK:
+                print("Open clicked")
+                print("Folder selected: " + fileChooser.get_filename())
+                executable = ""
+                directory = fileChooser.get_filename()
+            elif response == Gtk.ResponseType.CANCEL:
+                print("Cancel clicked")
+            fileChooser.destroy()
+
+        # If there is no directory after asking for a folder, abort
+        if directory == "":
+            print("No directory specified")
+            exit()
 
         self.executable = executable
         self.directory = directory
 
-        # Get the file's mime type
-        mimeType = mimetypes.MimeTypes().guess_type(argv[1])[0] 
-        print(mimeType)
+        # Get the file's mime type for determining defaults
+        if len(argv) > 1:
+            mimeType = mimetypes.MimeTypes().guess_type(argv[1])[0] 
+            print(mimeType)
 
-        if mimeType is None:
-            mimeType = 'unknown'  
+            if mimeType is None:
+                mimeType = 'unknown'  
 
-        self.mime = mimeType  
+        else:
+            mimeType = 'unknown'
+        self.mime = mimeType
 
-        # Create a label aligned to the left
+        # Create a label for name
         nameLabel = Gtk.Label()
         nameLabel.set_markup("<b>Name:</b>")
         nameLabel.set_halign(Gtk.Align.END)
 
-        # Create a text entry
+        # Create a name entry
         nameEntry = Gtk.Entry()
-
-        # Make nameEntry alpha-numeric
         nameEntry.set_input_purpose(Gtk.InputPurpose.ALPHA)
-
-        # Add tooltip to nameEntry
         nameEntry.set_tooltip_text("Enter the name of the launcher")
 
         # If the executable name is alpha-numeric, set nameEntry text to the executable name
         if executable.isalnum():
-            # Set nameEntry to the executable name (with capitalization)
             nameEntry.set_text(executable.capitalize())
         elif mimeType.startswith(("inode/directory", "image", "video", "audio", "text", "application")):
-            # Set nameEntry to the mime type (with capitalization)
             nameEntry.set_text(mimeType.split("/")[0].capitalize())
         
         nameEntry.set_hexpand(True)
@@ -108,17 +128,15 @@ class MainWindow(Gtk.Window):
         cbox.pack_start(nameLabel, True, True, 0)
         rbox.pack_start(nameEntry, False, True, 0)
 
-        # Create a label aligned to the left
+        # Create a label for the command
         commandLabel = Gtk.Label()
         commandLabel.set_markup("<b>Command:</b>")
         commandLabel.set_halign(Gtk.Align.END)
 
-        # Create a text entry
+        # Create a command entry
         commandEntry = Gtk.Entry()
-        self.commandEntry = commandEntry # Save the commandEntry for later use
-
-        # Add tooltip to commandEntry
         commandEntry.set_tooltip_text("Enter the command to run")
+        self.commandEntry = commandEntry
 
         def set_command(self, item): # Gonna need this later
             print(item)
@@ -135,7 +153,9 @@ class MainWindow(Gtk.Window):
 
         self.set_command = set_command
 
-        set_command(self, argv[1])
+        # Set the command to the executable if there is one
+        if len(argv) > 1:
+           set_command(self, argv[1])
 
         commandEntry.set_hexpand(True)
 
@@ -144,7 +164,6 @@ class MainWindow(Gtk.Window):
         commandBrowseButton.set_hexpand(False)
         commandBrowseButton.connect("clicked", self.on_browse_button_clicked)
 
-        # Create a horizontal box to hold the entry and browse button
         commandEntryBox = Gtk.Box(spacing=6)
         commandEntryBox.pack_start(commandEntry, True, True, 0)
         commandEntryBox.pack_end(commandBrowseButton, False, True, 0)
@@ -152,15 +171,13 @@ class MainWindow(Gtk.Window):
         cbox.pack_start(commandLabel, True, True, 0)
         rbox.pack_start(commandEntryBox, False, True, 0)
 
-        # Create a label aligned to the left
+        # Create a label for the icon
         iconLabel = Gtk.Label()
         iconLabel.set_markup("<b>Icon:</b>")
         iconLabel.set_halign(Gtk.Align.END)
 
-        # Create a text entry
+        # Create an icon entry
         iconEntry = Gtk.Entry()
-        
-        # Add tooltip to iconEntry
         iconEntry.set_tooltip_text("Enter the icon name or file to use")
         
         # Check if an icon name matches the executable name
@@ -168,14 +185,13 @@ class MainWindow(Gtk.Window):
             iconEntry.set_text(executable)
         
         iconEntry.set_hexpand(True)
-        self.iconEntry = iconEntry # Save the iconEntry for later use
+        self.iconEntry = iconEntry
 
         # Create a browse button
         iconBrowseButton = Gtk.Button.new_with_label("...")
         iconBrowseButton.set_hexpand(False)
         iconBrowseButton.connect("clicked", self.on_icon_button_clicked)
 
-        # Create a horizontal box to hold the entry and browse button
         iconEntryBox = Gtk.Box(spacing=6)
         iconEntryBox.pack_start(iconEntry, True, True, 0)
         iconEntryBox.pack_end(iconBrowseButton, False, True, 0)
@@ -183,28 +199,24 @@ class MainWindow(Gtk.Window):
         cbox.pack_start(iconLabel, True, True, 0)
         rbox.pack_start(iconEntryBox, False, True, 0)
 
-        # Create a label aligned to the left
+        # Create a label for comment
         commentLabel = Gtk.Label()
         commentLabel.set_markup("<b>Comment:</b>")
         commentLabel.set_halign(Gtk.Align.END)
 
-        # Create a text entry
+        # Create a comment entry
         commentEntry = Gtk.Entry()
         commentEntry.set_hexpand(True)
-        self.commentEntry = commentEntry # Save the commentEntry for later use
-
-        # Add tooltip to commentEntry
+        self.commentEntry = commentEntry
         commentEntry.set_tooltip_text("Enter a comment for the launcher")
 
         cbox.pack_start(commentLabel, True, True, 0)
         rbox.pack_start(commentEntry, False, True, 0)
 
-        # Create a check button
+        # Create a terminal check button
         terminalCheck = Gtk.CheckButton().new_with_label("Run in terminal")
         terminalCheck.set_hexpand(True)
-        self.terminalCheck = terminalCheck # Save the terminalCheck for later use
-
-        # Add tooltip to terminalCheck
+        self.terminalCheck = terminalCheck
         terminalCheck.set_tooltip_text("Check to run launcher in the terminal")
 
         cbox.pack_start(Gtk.Label(), True, True, 0)
@@ -216,9 +228,6 @@ class MainWindow(Gtk.Window):
 
         # Create Help, cancel, and OK buttons
         helpButton = Gtk.Button.new_with_label("Help")
-
-        # Set width to the same as the button label
-        helpButton.set_size_request(12, -1)
         helpButton.connect("clicked", self.on_help_button_clicked)
         helpButton.set_hexpand(False)
 
@@ -230,7 +239,6 @@ class MainWindow(Gtk.Window):
         okButton.connect("clicked", self.on_ok_button_clicked) 
         okButton.set_hexpand(False)
 
-        # Add the buttons to the button box
         # buttonBox.pack_start(helpButton, False, True, 0)
         buttonBox.pack_end(okButton, False, True, 0)
         buttonBox.pack_end(cancelButton, False, True, 0)
@@ -247,10 +255,8 @@ class MainWindow(Gtk.Window):
                 else:
                     iconPreview.set_from_icon_name("application-x-executable", Gtk.IconSize.DIALOG)
             elif typeCombo.get_active_text() == "Link":
-                # Set to default browser icon
                 iconPreview.set_from_icon_name("browser", Gtk.IconSize.DIALOG)                    
             elif typeCombo.get_active_text() == "Directory":
-                # Set to default folder icon
                 iconPreview.set_from_icon_name("folder", Gtk.IconSize.DIALOG)
 
         def set_icon(self):
@@ -262,7 +268,6 @@ class MainWindow(Gtk.Window):
                 # If iconEntry matches a file, set it to that
                 elif os.path.isfile(iconEntry.get_text()):
                     # Resize the image to fit the button using PIL
-                    # First check if PIL supports the file type
                     try:
                         Image.open(iconEntry.get_text())
                     except IOError:
@@ -279,7 +284,7 @@ class MainWindow(Gtk.Window):
                     iconPreview.set_from_file("/tmp/icon.png")
                     print("set image")
                     print("Matches file: " + iconEntry.get_text())
-                # If iconEntry isnt valid, set it to a default depending on the type
+                # If iconEntry isnt valid, set it to a default
                 else:
                     print("Doesnt match anything:" + iconEntry.get_text())
                     set_icon_defaults(self)
@@ -331,7 +336,7 @@ class MainWindow(Gtk.Window):
         if os.path.isfile(dest):
             # Create another file and add (2) to the end of the name
             dest = self.directory + "/" + self.nameEntry.get_text() + "(2).desktop"
-            # Check if dest already exists
+            # Check if dest already exists again
             if os.path.isfile(dest):
                 # Increase the number until it doesnt
                 i = 2
@@ -409,9 +414,6 @@ class MainWindow(Gtk.Window):
 
     def on_help_button_clicked(self, widget):
         print("Help button clicked")
-
-    def on_click_event(self, widget):
-        print(self.entry.get_text())
     
     def on_clear_button_clicked(self, widget):
         print("Clear button clicked")
@@ -422,5 +424,6 @@ win = MainWindow()
 win.connect("destroy", Gtk.main_quit)
 win.show_all()
 Gtk.main()
+
 
 # <3 
