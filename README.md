@@ -7,9 +7,9 @@ A Nemo Action that allows you to create .desktop files linking to a file, link, 
 
 To contribute, clone the repository to your local machine:
     
-    git clone https://github.com/geixco/create-shortcut-nemo-action.git
+    git clone https://github.com/mxchakitty/create-shortcut-nemo-action.git
     
-To download, get the files from http://geixcowo.ga/create-shortcut-nemo-action.tar.gz and extract them to your local machine.
+To download, get the files from https://mxcha.cf/create-shortcut-nemo-action.tar.gz and extract them to your local machine.
 
     tar -xvf create-shortcut-nemo-action.tar.gz
 
