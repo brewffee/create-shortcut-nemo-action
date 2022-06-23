@@ -1,6 +1,9 @@
 # create-shortcut-nemo-action
 A Nemo Action that allows you to create .desktop files linking to a file, link, or directory of your choosing. (This action is also available as a stand-alone application!)
 
+## NOTICE BEFORE YOU CONTINUE
+I'm no longer maintaining this project. This was made entirely with GitHub Copilot and Python, which I have not and do not plan to learn. The executable is very slow and unreliable, and any links that may break will not be updated.
+
 ![Preview](./instruction/preview.png)
 
 ## Installation
